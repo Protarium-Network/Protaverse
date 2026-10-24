@@ -1,0 +1,28 @@
+{{ $menu := true }}
+{{ if ne .menu nil }}
+    {{ $menu = .menu }}
+{{ end }}
+
+{{ if not .isPjax }}
+<!DOCTYPE html>
+<html lang="{{ .local }}">
+<head>
+  <meta charset="utf-8">
+  <title>{{ if .title }}{{ .title }}{{ else }}Portal{{ end }}</title>
+
+  <link rel="stylesheet" href="/css/portal.css">
+  <script src="/js/portal/complete-emu.js"></script>
+  <script src="/js/portal/complete.js"></script>
+</head>
+
+<body
+  data-hashed-pid=""
+  data-user-id=""
+  data-profile-url="/users/{{ if .account }}{{ .account.UserId }}{{ end }}"
+  data-lang="{{ .local }}"
+  data-country="">
+
+  {{ if $menu }}
+    {{ template "portal/partials/sidebar.html" . }}
+  {{ end }}
+{{ end }}

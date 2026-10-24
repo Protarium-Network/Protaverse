@@ -1,0 +1,32 @@
+{{ $t := index .lang "olv.portal" }}
+
+{{ range .communities }}
+    <li id="community-{{ .OliveCommunityId }}">
+        <span class="icon-container">
+            <img src="{{ if .Icon }}{{ .Icon }}{{ else }}/img/larimar/general-icon.png{{ end }}" class="icon">
+        </span>
+        <a href="/titles/{{ .OliveTitleId }}/{{ .OliveCommunityId }}" data-pjax="#body" class="scroll to-community-button"></a>
+        <div class="body">
+            <div class="body-content">
+                <span class="community-name title">{{ .Name }}</span>
+
+                {{ if eq .Platform 0 }}
+                    <span class="platform-tag platform-tag-wiiu"></span>
+                {{ else if eq .Platform 1 }}
+                    <span class="platform-tag platform-tag-3ds"></span>
+                {{ else if eq .Platform 2 }}
+                    <span class="platform-tag platform-tag-wiiu-3ds"></span>
+                {{ end }}
+
+                {{ $catKey := print "category_" .Category }}
+                <span class="text">
+                    {{ with index $t $catKey }}
+                        {{ . }}
+                    {{ else }}
+                        {{ .Category }}
+                    {{ end }}
+                </span>
+            </div>
+        </div>
+    </li>
+{{ end }}

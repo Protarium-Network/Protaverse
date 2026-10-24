@@ -1,0 +1,32 @@
+<menu id="global-menu">
+  <li id="global-menu-mymenu">
+    <a href="/users/{{ .account.user_id }}" data-pjax="#body" data-sound="SE_WAVE_MENU">
+      <span class="mii-icon">
+        <img src="/mii/{{ .account.pid }}/normal_face.png" onerror="this.onerror=null;this.src='/img/default_mii/normal_face.png';" alt="User Menu">
+      </span>
+      <span>{{ index (index .lang "olv.portal") "user_menu" }}</span>
+    </a>
+  </li>
+  <li id="global-menu-feed">
+    <a href="/" data-pjax="#body" data-sound="SE_WAVE_MENU">{{ index (index .lang "olv.portal") "activity" }}</a>
+  </li>
+  <li id="global-menu-community">
+    <a href="/communities" data-pjax="#body" data-sound="SE_WAVE_MENU">{{ index (index .lang "olv.portal") "community" }}</a>
+  </li>
+  <li id="global-menu-message">
+    <a href="/friend_messages" data-pjax="#body" data-sound="SE_WAVE_MENU">{{ index (index .lang "olv.portal") "messages" }}
+      <span class="badge" style="display: none;">0</span>
+    </a>
+  </li>
+  <li id="global-menu-news">
+    <a href="/news/my_news" data-pjax="#body" data-sound="SE_WAVE_MENU">{{ index (index .lang "olv.portal") "news" }}
+      <span class="badge" style="display: none;">0</span>
+    </a>
+  </li>
+  <li id="global-menu-exit">
+    <a href="#" role="button" data-sound="SE_WAVE_EXIT">{{ index (index .lang "olv.portal") "exit" }}</a>
+  </li>
+  <li id="global-menu-back" class="none">
+    <a href="#" role="button" class="accesskey-B" data-sound="SE_WAVE_BACK">{{ index (index .lang "olv.portal") "back" }}</a>
+  </li>
+</menu>

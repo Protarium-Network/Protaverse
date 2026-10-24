@@ -1,0 +1,21 @@
+{{ template "portal/partials/header.html" . }}
+
+<div id="body">
+    <header id="header">
+        <h1 id="page-title">{{ index (index .lang "olv.portal") "activity" }}</h1>
+    </header>
+
+    <div id="activity-feed-tutorial" class="tutorial-window">
+        <p class="tutorial-text">In your activity feed, you can view posts from your friends and from people you're following. To get started, why not follow some people whose posts interest you? You can also search for friends using Search Users in the upper right.
+            <br>
+        </p>
+        <h3>Latest Updates from Verified Users</h3>
+        <ul class="list-content-with-icon-and-text arrow-list"></ul>
+    </div>
+
+    <div id="activity-feed" class="body-content js-post-list post-list" data-next-page-url>
+        <div id="activity-feed-tutorial" class="tutorial-window no-content js-no-content">
+            <p>There are no posts to display.</p>
+        </div>
+    </div>
+</div>

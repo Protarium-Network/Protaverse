@@ -1,0 +1,53 @@
+{{ template "portal/partials/header.html" . }}
+
+{{ $t := index .lang "olv.portal" }}
+{{ $heading := "" }}
+{{ if ne .query nil }}
+    {{ $heading = $t.search_results }}
+{{ else if .category }}
+    {{ $heading = index $t (print "category_" .category) }}
+{{ else }}
+    {{ $heading = $t.all_communities }}
+{{ end }}
+
+<div id="body">
+    <header id="header">
+        <a id="header-favorites-button" href="/communities/favorites" data-pjax="#body">{{ $t.favorites_communities }}</a>
+        <h1 id="page-title" class="left">{{ $t.community }}</h1>
+    </header>
+
+    <div id="community-top" class="body-content">
+        <div class="community-list">
+            <span type="button" class="fixed-bottom-button search-button" id="community-search">{{ $t.search }}
+                <input name="query" class="title-search-query" minlength="2" maxlength="20" inputform="monospace" guidestring="{{ $t.search_titles }}" data-pjax="#body">
+            </span>
+
+            <div class="headline with-filter">
+                <h2>{{ $heading }}</h2>
+                <div class="with-filter-right">
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" data-sound="SE_WAVE_BALLOON_OPEN" href="#">{{ $t.filter }}</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="button" href="/communities" data-pjax="#body">{{ $t.all_communities }}</a></li>
+                            {{ range .categories }}
+                                <li><a class="button" href="/communities/categories/{{ . }}" data-pjax="#body">{{ index $t (print "category_" .) }}</a></li>
+                            {{ end }}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {{ if gt (len .communities) 0 }}
+                <ul class="list-content-with-icon-column" id="community-top-content">
+                    {{ template "portal/partials/community.html" . }}
+                </ul>
+            {{ else }}
+                <div class="no-content-window">
+                    <div class="window">
+                        <p>{{ if ne .query nil }}{{ $t.no_search_results }}{{ else }}{{ $t.no_communities }}{{ end }}</p>
+                    </div>
+                </div>
+            {{ end }}
+        </div>
+    </div>
+</div>
