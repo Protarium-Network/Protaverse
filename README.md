@@ -1,7 +1,7 @@
 <h1 align="center">Protaverse</h1>
 
 <p align="center">
-  <b>Miiverse recreation for Nintendo Wii U & Nintendo 3DS.</b>
+  <b>Miiverse recreation for Nintendo Wii U, Nintendo 3DS & Offdevice.</b>
 </p>
 
 <p align="center">
