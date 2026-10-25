@@ -17,7 +17,14 @@ func main() {
 	InitDB()
 	InitTranslations()
 
-	router := gin.Default()
+	var router *gin.Engine
+
+	if os.Getenv("USE_DEBUG") == "1" {
+		router = gin.Default()
+	} else {
+		router = gin.New()
+		router.Use(gin.Recovery())
+	}
 
 	_ = router.SetTrustedProxies([]string{"127.0.0.1", "::1"})
 
@@ -27,8 +34,9 @@ func main() {
 
 	router.Static("/static", "./static")
 	router.Static("/css", "./static/css")
+	router.Static("/img", "./static/img")
+	router.Static("/js", "./static/js")
 
-	// Chargement récursif et exact de tous les templates .html sous views/
 	t := template.New("")
 	err := filepath.Walk("views", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -51,26 +59,23 @@ func main() {
 		return nil
 	})
 	if err != nil {
-		log.Fatalf("Erreur lors du chargement des templates: %v", err)
+		log.Fatalf("Error while loading templates: %v", err)
 	}
 	router.SetHTMLTemplate(t)
 
-	// Middlewares globaux
 	router.Use(DirectoryMiddleware())
 	router.Use(LangMiddleware())
 	router.Use(PjaxMiddleware())
+	router.Use(AuthMiddleware(DB))
 
-	// Middleware de redirection si non connecté
 	router.Use(func(c *gin.Context) {
 		path := c.Request.URL.Path
 
-		// Pages publiques autorisées sans connexion
-		if path == "/welcome" || path == "/health" || strings.HasPrefix(path, "/static") || strings.HasPrefix(path, "/css") {
+		if path == "/welcome" || path == "/health" || strings.HasPrefix(path, "/static") || strings.HasPrefix(path, "/css") || strings.HasPrefix(path, "/img") || strings.HasPrefix(path, "/js") {
 			c.Next()
 			return
 		}
 
-		// Vérifie si le compte existe dans le contexte
 		account, exists := c.Get("account")
 		if !exists || account == nil {
 			c.Redirect(302, "/welcome")
@@ -81,7 +86,6 @@ func main() {
 		c.Next()
 	})
 
-	// Route spécifique pour /welcome
 	router.GET("/welcome", func(c *gin.Context) {
 		dir := c.GetString("directory")
 		if dir == "" {
@@ -100,46 +104,24 @@ func main() {
 	{
 		commRoutes.GET("", func(c *gin.Context) {
 			dir := c.GetString("directory")
-			communities, err := GetAllCommunities()
-			if err != nil {
-				c.HTML(500, dir+"/error.html", gin.H{"code": 500, "message": "Error: " + err.Error()})
-				return
-			}
-			c.HTML(200, dir+"/communities.html", gin.H{"communities": communities})
-		})
-
-		commRoutes.GET("/favorites", func(c *gin.Context) {
-			dir := c.GetString("directory")
-			c.HTML(200, dir+"/fav_communities.html", nil)
-		})
-
-		commRoutes.GET("/:olive_title_id/:olive_community_id", func(c *gin.Context) {
-			dir := c.GetString("directory")
-			oliveCommunityId := c.Param("olive_community_id")
-
-			community, err := GetCommunityById(oliveCommunityId)
-			if err != nil || community == nil {
-				c.HTML(404, dir+"/error.html", gin.H{"code": 404, "message": "Community not found"})
-				return
-			}
-			c.HTML(200, dir+"/page_community.html", gin.H{"community": community})
+			c.HTML(200, dir+"/communities.html", gin.H{})
 		})
 	}
 
 	router.GET("/messages", func(c *gin.Context) {
 		dir := c.GetString("directory")
-		c.HTML(200, dir+"/messages.html", nil)
+		c.HTML(200, dir+"/messages.html", gin.H{})
 	})
 
 	newsRoutes := router.Group("/news")
 	{
 		newsRoutes.GET("/my_news", func(c *gin.Context) {
 			dir := c.GetString("directory")
-			c.HTML(200, dir+"/news.html", nil)
+			c.HTML(200, dir+"/news.html", gin.H{})
 		})
 		newsRoutes.GET("/friend_requests", func(c *gin.Context) {
 			dir := c.GetString("directory")
-			c.HTML(200, dir+"/friend_requests.html", nil)
+			c.HTML(200, dir+"/friend_requests.html", gin.H{})
 		})
 	}
 
@@ -149,14 +131,7 @@ func main() {
 
 	router.GET("/users/:user_id", func(c *gin.Context) {
 		dir := c.GetString("directory")
-		userId := c.Param("user_id")
-
-		user, err := GetUserById(userId)
-		if err != nil || user == nil {
-			c.HTML(404, dir+"/error.html", gin.H{"code": 404, "message": "User not found"})
-			return
-		}
-		c.HTML(200, dir+"/users.html", gin.H{"user": user, "own_profile": false})
+		c.HTML(200, dir+"/users.html", gin.H{})
 	})
 
 	activityRoutes := router.Group("/activity")
@@ -183,7 +158,7 @@ func main() {
 
 	port := os.Getenv("HTTP_PORT")
 	if port == "" {
-		port = "3000"
+		port = "3001"
 	}
 
 	LogSuccess("Global Miiverse started on port " + port)

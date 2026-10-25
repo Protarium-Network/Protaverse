@@ -18,7 +18,9 @@ func logMessage(level, color, message string) {
 	fmt.Printf("%s[%s] [%s] %s%s\n", color, timestamp, level, message, ColorReset)
 }
 
-func LogInfo(msg string)    { logMessage("INFO", ColorInfo, msg) }
-func LogWarn(msg string)    { logMessage("WARN", ColorWarn, msg) }
-func LogError(msg string)   { logMessage("ERROR", ColorError, msg) }
-func LogSuccess(msg string) { logMessage("SUCCESS", ColorSuccess, msg) }
+func LogInfo(format string, a ...any)  { logMessage("INFO", ColorInfo, fmt.Sprintf(format, a...)) }
+func LogWarn(format string, a ...any)  { logMessage("WARN", ColorWarn, fmt.Sprintf(format, a...)) }
+func LogError(format string, a ...any) { logMessage("ERROR", ColorError, fmt.Sprintf(format, a...)) }
+func LogSuccess(format string, a ...any) {
+	logMessage("SUCCESS", ColorSuccess, fmt.Sprintf(format, a...))
+}
